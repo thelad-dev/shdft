@@ -17,25 +17,25 @@ Alle Einstellungen liegen in markierten Blöcken (`# BEGIN shdft` … `# END shd
 ## Schnellstart (One-Liner)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/dtrywets/shdft/main/setup-shell-defaults.sh | bash
+curl -fsSL https://raw.githubusercontent.com/thelad-dev/shdft/main/setup-shell-defaults.sh | bash
 ```
 
 Status prüfen:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/dtrywets/shdft/main/setup-shell-defaults.sh | bash -s -- --status
+curl -fsSL https://raw.githubusercontent.com/thelad-dev/shdft/main/setup-shell-defaults.sh | bash -s -- --status
 ```
 
 Deinstallieren:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/dtrywets/shdft/main/setup-shell-defaults.sh | bash -s -- --uninstall
+curl -fsSL https://raw.githubusercontent.com/thelad-dev/shdft/main/setup-shell-defaults.sh | bash -s -- --uninstall
 ```
 
 ## Installation (Clone)
 
 ```bash
-git clone https://github.com/dtrywets/shdft.git
+git clone https://github.com/thelad-dev/shdft.git
 cd shdft
 chmod +x setup-shell-defaults.sh
 ./setup-shell-defaults.sh
