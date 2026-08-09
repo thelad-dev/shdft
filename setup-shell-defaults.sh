@@ -3,7 +3,7 @@ set -euo pipefail
 
 SHDFT_BEGIN="# BEGIN shdft"
 SHDFT_END="# END shdft"
-REPO_URL="https://github.com/dtrywets/shdft"
+REPO_URL="https://github.com/thelad-dev/shdft"
 
 usage() {
     cat <<EOF
