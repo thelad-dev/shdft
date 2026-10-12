@@ -1,0 +1,12 @@
+{
+  "theme": "dark-ansi",
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "refreshInterval": 1
+  },
+  "language": "Deutsch",
+  "editorMode": "normal",
+  "inputNeededNotifEnabled": true,
+  "skipDangerousModePermissionPrompt": true
+}

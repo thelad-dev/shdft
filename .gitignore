@@ -1,5 +1,6 @@
-.DS_Store
-Thumbs.db
-*.swp
-*.swo
 *~
+.DS_Store
+.fm-grok-turnend
+*.swo
+*.swp
+Thumbs.db
