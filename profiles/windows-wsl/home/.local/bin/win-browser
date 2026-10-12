@@ -1,0 +1,10 @@
+#!/bin/sh
+# Opens URLs from WSL in Windows: Lavish boards (port 4387) in Edge, everything else in the Windows default browser.
+url="$1"
+[ -n "$url" ] || exit 2
+case "$url" in
+  *:4387/*)
+    exec "/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" "$url" >/dev/null 2>&1 ;;
+  *)
+    exec /mnt/c/Windows/System32/rundll32.exe url.dll,FileProtocolHandler "$url" >/dev/null 2>&1 ;;
+esac

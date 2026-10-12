@@ -19,6 +19,8 @@ Optionen:
   -h, --help    Diese Hilfe
 
 Nach der Installation: source ~/.bashrc  bzw.  source ~/.zshrc
+
+Komplettstack (WezTerm/Herdr/Claude/Pi): profiles/linux/ oder profiles/windows-wsl/
 EOF
 }
 

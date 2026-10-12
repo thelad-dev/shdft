@@ -1,0 +1,3 @@
+* text=auto eol=lf
+# Windows liest .wslconfig auch mit LF; CRLF entspricht der üblichen Windows-Fassung.
+profiles/windows-wsl/windows/.wslconfig text eol=crlf
