@@ -61,6 +61,10 @@ Entscheidungen und offene Punkte für den Captain, auch aus `/bearings` oder `/a
 Lavish wird über Tailscale erreichbar gebunden, nicht nur auf localhost und nie ins offene LAN.
 Aufträge an Worker geben die Worte des Captains wieder und erfinden keine Rahmung dazu (kein Zielunternehmen, kein Empfänger, kein Umsetzungsziel, das er nicht genannt hat).
 
+## GitHub-Kommentarstil
+
+GitHub-Issue- und PR-Kommentare klingen wie kurze Notizen eines kompetenten Entwicklers (natürliche Sätze, erste Person wo passend, Kontraktionen ok): keine Protokoll-Labels (z. B. no-mistakes, Gate, Nachweis, Intent, Handwerk), keine Tabellen/Abschnittsüberschriften/Aufzählungsflut außer wenn der Maintainer das verlangt, keine Erwähnung oder Rechtfertigung von AI/Tools/internen Workflows ohne direkte Frage; nur sagen was geändert/getestet wurde oder was vom Reviewer gebraucht wird - dann Schluss; internes Validierungsprotokoll nur als Klartext-Ergebnis, nie als Protokollblock. Bei AI-Policy- oder „autonomous agent“-Belehrungen: menschlich und ruhig angenervt antworten - kurz, ohne Entschuldigungsessay und ohne Workflow-Rechtfertigung.
+
 ## Maintaining this file
 
 This file is global: it applies to every agent and every project on this machine (Claude Code imports it from `~/.claude/CLAUDE.md`, Pi reads it via `~/.pi/agent/AGENTS.md`).
