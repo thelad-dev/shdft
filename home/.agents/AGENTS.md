@@ -15,6 +15,7 @@
   Fix it in a separate commit only if the fix takes less effort than the task itself; if it would double the effort or more, report it as its own task instead.
   Keep the task's own diff limited to the task, unless the problem blocks the task.
 - Before using "dynamic workflows", "ultra code" or any harness feature that immediately spawns a large swarm of subagents, always explain the tradeoffs and ask the user for explicit approval.
+- Werte aus Datenfeldern werden immer so ausgeschrieben, wie das Feld sie liefert. Eine SSID, ein Name oder eine Kennung wird nie als Hex, Base64 oder sonstige Kodierung gedeutet und umgerechnet, auch wenn sie danach aussieht.
 
 ## Handwerk vor dem Diff
 
@@ -55,11 +56,18 @@ Nicht in den Chat. Kurz, prüfbar, eine Pflicht. Keine Wiederholung eines Satzes
 
 Antworten an den Captain im Chat sind immer deutsch, auch nach einer Übergabe zwischen Werkzeugen.
 
-## Vorlage von Entscheidungen
+## Vorlage von Entscheidungen und Berichten
 
 Entscheidungen und offene Punkte für den Captain, auch aus `/bearings` oder `/ahoy`, werden immer als Lavish-Board vorgelegt, nie nur im Chat.
+Dasselbe gilt für jeden Bericht, den der Captain lesen soll: er kommt als Lavish-Board, im Chat steht nur das Ergebnis in zwei, drei Sätzen plus der Link.
 Lavish wird über Tailscale erreichbar gebunden, nicht nur auf localhost und nie ins offene LAN.
 Aufträge an Worker geben die Worte des Captains wieder und erfinden keine Rahmung dazu (kein Zielunternehmen, kein Empfänger, kein Umsetzungsziel, das er nicht genannt hat).
+
+## Identität nach außen
+
+In Commit-Nachrichten, PR- und Issue-Texten und jedem anderen öffentlichen Text nie von "dem Captain", einem Auftraggeber oder einer dritten Person sprechen, die den Auftrag gegeben hat.
+Es wird in der ersten Person geschrieben oder der GitHub-Name genannt (hier `thelad-dev`).
+Nach außen darf nie erkennbar werden, dass Auftrag und Ausführung von verschiedenen stammen - keine Auftragszitate, keine Wortlaut-Blöcke, keine Rollenbezeichnungen.
 
 ## GitHub-Kommentarstil
 
