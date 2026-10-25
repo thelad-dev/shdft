@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Windows-Browser
+Exec=@HOME@/.local/bin/win-browser %u
+NoDisplay=true
+MimeType=x-scheme-handler/unknown;x-scheme-handler/about;x-scheme-handler/http;x-scheme-handler/https;text/html;

@@ -1,0 +1,6 @@
+{
+  "httpIdleTimeoutMs": 1800000,
+  "modelThinkingLevels": {
+    "strata/qwen3.8-flash-next-iq2_xs": "low"
+  }
+}

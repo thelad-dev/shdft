@@ -1,0 +1,27 @@
+{
+  "providers": {
+    "strata": {
+      "baseUrl": "http://127.0.0.1:8088/v1",
+      "api": "openai-completions",
+      "apiKey": "strata-local",
+      "models": [
+        {
+          "id": "qwen3.8-flash-next-iq2_xs",
+          "name": "qwen3.8-flash-next-iq2_xs [Strata]",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 131072,
+          "maxTokens": 16384,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        }
+      ]
+    }
+  }
+}
