@@ -16,9 +16,9 @@ config.window_decorations = "RESIZE"
 -- protocol, WezTerm otherwise sends CSI 127 u and CSI 3;1 ~, which do not delete.
 config.enable_kitty_keyboard = true
 config.keys = {
-	{ key = "Backspace", mods = "NONE", action = wezterm.action.SendString("\x7f") },
-	{ key = "Backspace", mods = "SHIFT", action = wezterm.action.SendString("\x7f") },
-	{ key = "Delete", mods = "NONE", action = wezterm.action.SendString("\x1b[3~") },
+    { key = "Backspace", mods = "NONE", action = wezterm.action.SendString("\x7f") },
+    { key = "Backspace", mods = "SHIFT", action = wezterm.action.SendString("\x7f") },
+    { key = "Delete", mods = "NONE", action = wezterm.action.SendString("\x1b[3~") },
 }
 
 -- Konsole habits: middle click pastes, also inside herdr (which captures the mouse).
