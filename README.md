@@ -165,6 +165,7 @@ Status / Rückbau: `--status` bzw. `--uninstall`. Details und oh-my-zsh-Abfragen
 |---|---|
 | Mittelklick | Zwischenablage einfügen, auch in Herdr |
 | Umschalt+Enter, Strg+Enter | dank Kitty-Keyboard unterscheidbar an Herdr und Claude Code |
+| Rücktaste, Entf | klassisch löschen, auch bei aktivem Kitty-Keyboard |
 | Strg+Umschalt+C / V | Kopieren / Einfügen |
 | Strg+Umschalt+T / N / W | neuer Tab / neues Fenster / Tab schließen |
 | Strg+Umschalt+R | Konfiguration neu laden |
