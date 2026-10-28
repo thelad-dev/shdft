@@ -33,6 +33,7 @@ Linux (nativ)                          Windows 11 + WSL
 | Herdr, Claude, Pi, AGENTS.md | `home/` | `~/.config/herdr`, `~/.claude`, `~/.pi`, `~/.agents` | Symlink (Profil-Installer) |
 | Claude/Pi Einstellungen (Whitelist) | `home/.claude/settings.json`, `home/.pi/agent/settings.json` | gleiche Pfade unter `$HOME` | Schlüssel hineinmischen |
 | WezTerm Linux | `profiles/linux/wezterm.lua` | `~/.config/wezterm/wezterm.lua` | Symlink |
+| Hack Nerd Font Linux | `profiles/linux/install-font.sh` | `~/.local/share/fonts` | Skript (`install.sh` ruft es auf) |
 | WezTerm + `.wslconfig` Windows | `profiles/windows-wsl/windows/` | `%USERPROFILE%\.config\wezterm\`, `%USERPROFILE%\.wslconfig` | Kopie (`install.ps1`) |
 | WSL Autostart / Font | `profiles/windows-wsl/install-admin.ps1`, `install-font.ps1` | Aufgabenplanung / Fonts | PowerShell |
 
@@ -71,7 +72,7 @@ npm install -g quota-axi
 for b in node npm npx quota-axi; do ln -sfn "$NVM_BIN/$b" ~/.local/bin/$b; done
 ```
 
-WezTerm und Hack Nerd Font über den Paketmanager oder die Upstream-Installer. WezTerm liest `~/.config/wezterm/wezterm.lua` (Symlink ins Repo).
+WezTerm über den Paketmanager oder den Upstream-Installer. `./install.sh` legt Hack Nerd Font nach `~/.local/share/fonts` (auch einzeln: `./install-font.sh`). WezTerm liest `~/.config/wezterm/wezterm.lua` (Symlink ins Repo).
 
 ## Schnellstart Windows/WSL
 
@@ -155,6 +156,7 @@ Status / Rückbau: `--status` bzw. `--uninstall`. Details und oh-my-zsh-Abfragen
 | `/etc/wsl.conf` | windows-wsl | sudo | systemd und Standardbenutzer |
 | `wsl --install` | windows-wsl | Administrator | WSL-Funktion |
 | Autostart-Aufgabe | windows-wsl | Administrator | Start ohne Anmeldung |
+| Hack Nerd Font | linux | keins | eigener Benutzer, `~/.local/share/fonts` |
 | Hack Nerd Font | windows-wsl | keins (HKCU) | eigener Benutzer |
 
 ## Tastenbelegung
@@ -204,6 +206,7 @@ Statuszeile: Modell, Kontext und Limits rechtsbündig (`quota-axi` optional).
 | Herdr/Claude/Pi/AGENTS ändern | Datei unter `~` bearbeiten (Symlink), im Repo committen |
 | settings-Whitelist erweitern | Key in `home/.claude/settings.json` bzw. `home/.pi/...` eintragen, Profil-`install.sh` |
 | WezTerm Linux | `profiles/linux/wezterm.lua`, `./install.sh` |
+| Hack Nerd Font Linux | `profiles/linux/install-font.sh`, auch über `./install.sh` |
 | WezTerm / `.wslconfig` Windows | Datei unter `profiles/windows-wsl/windows/`, dann `install.ps1` |
 | Shell-Aliase | `shell/bashrc-shdft.sh` bzw. `setup-shell-defaults.sh`, dann Installer |
 
@@ -216,6 +219,7 @@ Statuszeile: Modell, Kontext und Limits rechtsbündig (`quota-axi` optional).
 ```
 
 Shell allein: `./setup-shell-defaults.sh --uninstall`.
+Hack Nerd Font unter `~/.local/share/fonts` bleibt beim Rückbau liegen.
 
 Windows zusätzlich (Administrator): `schtasks /delete /tn "WSL Ubuntu Autostart" /f`.
 WezTerm/`.wslconfig` aus `%USERPROFILE%\.shdft-backup\` zurückkopieren oder löschen.
