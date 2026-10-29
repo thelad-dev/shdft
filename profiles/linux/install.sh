@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Richtet das Linux-Profil von shdft ein, ohne sudo:
 # Symlinks ins Repo, bewusst gesetzte JSON-Schlüssel mischen,
-# markierte Blöcke in ~/.bashrc und ~/.profile pflegen, WezTerm-Konfiguration verlinken.
+# markierte Blöcke in ~/.bashrc und ~/.profile pflegen, WezTerm-Konfiguration verlinken,
+# Hack Nerd Font ins Benutzerverzeichnis legen.
 # Abweichende vorhandene Dateien werden vorher nach ~/.shdft-backup/<Zeitstempel>/ gesichert.
 # Mehrfach ausführbar: ein zweiter Lauf meldet jeden Schritt als unverändert.
 set -euo pipefail
@@ -230,6 +231,7 @@ Nicht zurückgebaut: die gemischten Schlüssel in ~/.claude/settings.json und ~/
 weil sie vor der Installation schon dort gestanden haben können.
 statusLine zeigt danach auf das entfernte ~/.claude/statusline.sh; Claude Code zeigt dann einfach keine Statuszeile.
 Wer den Schlüssel loswerden will: jq 'del(.statusLine)' ~/.claude/settings.json > /tmp/s.json && mv /tmp/s.json ~/.claude/settings.json
+Hack Nerd Font unter ~/.local/share/fonts wird nicht entfernt.
 Alle früheren Fassungen liegen weiter unter ~/.shdft-backup/<Zeitstempel>/.
 EOF
 }
@@ -253,6 +255,13 @@ install() {
 	block "$HOME/.bashrc" shdft "$SHELL_SRC/bashrc-shdft.sh"
 	block "$HOME/.bashrc" shdft-profile "$PROFILE/shell/bashrc-profile.sh"
 	block "$HOME/.profile" shdft-profile "$PROFILE/shell/profile-profile.sh"
+
+	echo "Schrift (Hack Nerd Font):"
+	if [ "$DRY_RUN" = 1 ]; then
+		"$PROFILE/install-font.sh" --dry-run
+	else
+		"$PROFILE/install-font.sh"
+	fi
 
 	if [ "$BACKED_UP" = 1 ]; then
 		echo
