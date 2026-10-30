@@ -35,19 +35,6 @@ config.mouse_bindings = {
 	{ event = { Down = { streak = 1, button = "Middle" } }, mods = "NONE", action = wezterm.action.PasteFrom("Clipboard"), mouse_reporting = true },
 }
 
--- Only the first window at startup attaches to herdr; after detaching, it stays in a login shell.
-wezterm.on("gui-startup", function(cmd)
-	if cmd and cmd.args then
-		wezterm.mux.spawn_window(cmd)
-		return
-	end
-	local _, _, window = wezterm.mux.spawn_window({
-		args = { "bash", "-lc", "cd ~ && herdr; exec bash -l" },
-	})
-	-- No title/button bar, so the herdr window opens maximized.
-	window:gui_window():maximize()
-end)
-
 -- Dim unfocused windows so the focused one is obvious at a glance.
 local UNFOCUSED_FOREGROUND_TEXT_HSB = { hue = 1.0, saturation = 0.5, brightness = 0.65 }
 local UNFOCUSED_WINDOW_BACKGROUND_OPACITY = 0.82
