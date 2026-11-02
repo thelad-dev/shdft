@@ -72,7 +72,7 @@ npm install -g quota-axi
 for b in node npm npx quota-axi; do ln -sfn "$NVM_BIN/$b" ~/.local/bin/$b; done
 ```
 
-WezTerm über den Paketmanager oder den Upstream-Installer. `./install.sh` legt Hack Nerd Font nach `~/.local/share/fonts` (auch einzeln: `./install-font.sh`). WezTerm liest `~/.config/wezterm/wezterm.lua` (Symlink ins Repo).
+WezTerm über den Paketmanager oder den Upstream-Installer. `./install.sh` legt Hack Nerd Font nach `~/.local/share/fonts` (auch einzeln: `./install-font.sh`), außer Fontconfig kennt die Schrift schon systemweit, etwa aus dem Paket `ttf-hack-nerd`. WezTerm liest `~/.config/wezterm/wezterm.lua` (Symlink ins Repo).
 
 ## Schnellstart Windows/WSL
 
