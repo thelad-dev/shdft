@@ -4,6 +4,8 @@
 # legt die vier Schnitte Regular, Bold, Italic und BoldItalic unter ~/.local/share/fonts ab
 # und aktualisiert den Fontconfig-Cache. Bereits installierte Schnitte mit passender Prüfsumme
 # bleiben unverändert; dann wird nichts heruntergeladen.
+# Kennt Fontconfig alle vier Schnitte schon aus einer anderen Quelle (etwa dem Paket ttf-hack-nerd),
+# legt das Skript keine eigene Kopie an: sie würde die Systemschrift überdecken.
 # WezTerm sieht die Schrift nach einem Neustart.
 set -euo pipefail
 
@@ -73,12 +75,62 @@ installed() {
 
 report() { printf '  %-12s %s\n' "$1" "$2"; }
 
+# Stilname, unter dem Fontconfig den Schnitt führt.
+fc_style() {
+    case "$1" in
+    BoldItalic) printf '%s\n' 'Bold Italic' ;;
+    *) printf '%s\n' "$1" ;;
+    esac
+}
+
+# Erste Datei, in der Fontconfig den Schnitt der Familie außerhalb von FONT_DIR kennt.
+system_file() {
+    command -v fc-list >/dev/null 2>&1 || return 1
+    local file
+    while IFS= read -r file; do
+        case "$file" in
+        "$FONT_DIR"/*) ;;
+        ?*)
+            printf '%s\n' "$file"
+            return 0
+            ;;
+        esac
+    done < <(fc-list --format='%{file}\n' "Hack Nerd Font:style=$(fc_style "$1")" 2>/dev/null)
+    return 1
+}
+
 need() {
     command -v "$1" >/dev/null 2>&1 || {
         echo "Fehler: $1 fehlt." >&2
         exit 1
     }
 }
+
+system=()
+for style in "${STYLES[@]}"; do
+    file=$(system_file "$style") || break
+    system+=("$file")
+done
+if [ "${#system[@]}" -eq "${#STYLES[@]}" ]; then
+    echo 'Hack Nerd Font: schon vorhanden (System), keine eigene Kopie:'
+    for file in "${system[@]}"; do
+        report 'vorhanden' "$file"
+    done
+    own=()
+    for style in "${STYLES[@]}"; do
+        file=$(font_file "$style")
+        if [ -e "$file" ] || [ -L "$file" ]; then
+            own+=("$file")
+        fi
+    done
+    if [ "${#own[@]}" -gt 0 ]; then
+        echo "Hinweis: eigene Kopie unter ${FONT_DIR} überdeckt die Systemschrift. Entfernen mit:"
+        printf '  rm'
+        printf ' %q' "${own[@]}"
+        printf ' && fc-cache -f\n'
+    fi
+    exit 0
+fi
 
 missing=()
 echo 'Hack Nerd Font v3.4.0:'
