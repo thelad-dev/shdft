@@ -8,5 +8,9 @@
   "language": "Deutsch",
   "editorMode": "normal",
   "inputNeededNotifEnabled": true,
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "spinnerVerbs": {
+    "mode": "replace",
+    "verbs": ["Arbeite"]
+  }
 }
