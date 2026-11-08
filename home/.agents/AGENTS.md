@@ -6,6 +6,7 @@
 - Never manually modify CHANGELOG.md files or any files that are marked as auto-generated
 - Niemals Tabs erzeugen: eingerueckt wird ausschliesslich mit Leerzeichen, in jeder Datei und jeder Sprache.
 - Keine Arbeiterfenster stehenlassen: sobald ein Arbeiter fertig ist und sein Ergebnis gesichert ist (Commit auf dem veroeffentlichten Beitrag, Arbeitskopie sauber), wird sein Fenster geschlossen - nicht erst, wenn der Beitrag zusammengefuehrt ist. Ich will keine Tabs vorfinden, die ein Arbeiter erzeugt hat.
+- Kein Arbeiter bleibt offen, um auf eine Reaktion von aussen zu warten (Review, CI, Maintainer, Antwort): er schreibt den ausfuehrlichen Bericht und wird geschlossen; ein sammelnder Arbeiter prueft zyklisch (etwa stuendlich), ob es zu den geschlossenen Arbeiten Reaktionen gab, und vermittelt sie weiter.
 - When making technical decisions within the task, do not give much weight to development cost.
   Instead, prefer quality, simplicity, robustness, long term maintainability, and scalability where the task needs it.
   Choose the best solution for the task, not the cheapest; this never enlarges the task itself.
