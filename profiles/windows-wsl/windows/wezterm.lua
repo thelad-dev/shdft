@@ -23,8 +23,8 @@ config.keys = {
 
 -- Konsole habits: middle click pastes, also inside herdr (which captures the mouse).
 config.mouse_bindings = {
-	{ event = { Down = { streak = 1, button = "Middle" } }, mods = "NONE", action = wezterm.action.PasteFrom("Clipboard"), mouse_reporting = false },
-	{ event = { Down = { streak = 1, button = "Middle" } }, mods = "NONE", action = wezterm.action.PasteFrom("Clipboard"), mouse_reporting = true },
+    { event = { Down = { streak = 1, button = "Middle" } }, mods = "NONE", action = wezterm.action.PasteFrom("Clipboard"), mouse_reporting = false },
+    { event = { Down = { streak = 1, button = "Middle" } }, mods = "NONE", action = wezterm.action.PasteFrom("Clipboard"), mouse_reporting = true },
 }
 
 -- New tabs and windows open a plain WSL Ubuntu shell.
@@ -32,16 +32,16 @@ config.default_domain = "WSL:Ubuntu-24.04"
 
 -- Only the first window at startup attaches to herdr; after detaching, it stays in a login shell.
 wezterm.on("gui-startup", function(cmd)
-	if cmd and cmd.args then
-		wezterm.mux.spawn_window(cmd)
-		return
-	end
-	local _, _, window = wezterm.mux.spawn_window({
-		domain = { DomainName = "WSL:Ubuntu-24.04" },
-		args = { "bash", "-lc", "cd ~ && herdr; exec bash -l" },
-	})
-	-- No title bar (RESIZE), so the herdr window opens maximized.
-	window:gui_window():maximize()
+    if cmd and cmd.args then
+        wezterm.mux.spawn_window(cmd)
+        return
+    end
+    local _, _, window = wezterm.mux.spawn_window({
+        domain = { DomainName = "WSL:Ubuntu-24.04" },
+        args = { "bash", "-lc", "cd ~ && herdr; exec bash -l" },
+    })
+    -- No title bar (RESIZE), so the herdr window opens maximized.
+    window:gui_window():maximize()
 end)
 
 -- Dim unfocused windows so the focused one is obvious at a glance.
@@ -51,31 +51,31 @@ local UNFOCUSED_WINDOW_BACKGROUND_OPACITY = 0.82
 -- get_config_overrides() hands back a copy, so the current value is never the
 -- same table we last stored; compare the fields instead of the identity.
 local function same_text_hsb(actual, expected)
-	if actual == nil or expected == nil then
-		return actual == expected
-	end
-	return actual.hue == expected.hue
-		and actual.saturation == expected.saturation
-		and actual.brightness == expected.brightness
+    if actual == nil or expected == nil then
+        return actual == expected
+    end
+    return actual.hue == expected.hue
+        and actual.saturation == expected.saturation
+        and actual.brightness == expected.brightness
 end
 
 wezterm.on("window-focus-changed", function(window)
-	local overrides = window:get_config_overrides() or {}
-	local text_hsb, opacity
-	if not window:is_focused() then
-		text_hsb = UNFOCUSED_FOREGROUND_TEXT_HSB
-		opacity = UNFOCUSED_WINDOW_BACKGROUND_OPACITY
-	end
+    local overrides = window:get_config_overrides() or {}
+    local text_hsb, opacity
+    if not window:is_focused() then
+        text_hsb = UNFOCUSED_FOREGROUND_TEXT_HSB
+        opacity = UNFOCUSED_WINDOW_BACKGROUND_OPACITY
+    end
 
-	-- Only write when one of the two values we own actually changes; a redundant
-	-- set_config_overrides() call would trigger another config reload.
-	if same_text_hsb(overrides.foreground_text_hsb, text_hsb) and overrides.window_background_opacity == opacity then
-		return
-	end
+    -- Only write when one of the two values we own actually changes; a redundant
+    -- set_config_overrides() call would trigger another config reload.
+    if same_text_hsb(overrides.foreground_text_hsb, text_hsb) and overrides.window_background_opacity == opacity then
+        return
+    end
 
-	overrides.foreground_text_hsb = text_hsb
-	overrides.window_background_opacity = opacity
-	window:set_config_overrides(overrides)
+    overrides.foreground_text_hsb = text_hsb
+    overrides.window_background_opacity = opacity
+    window:set_config_overrides(overrides)
 end)
 
 return config
