@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Oeffnet das letzte offene bearings-Lavish-Board im Browser und gibt die URL aus.
+f="${XDG_CACHE_HOME:-$HOME/.cache}/claude-statusline/board.txt"
+[ -s "$f" ] || fm-board-link
+IFS='|' read -r url n t < "$f"
+[ -n "$url" ] || { echo "Kein offenes Board gefunden. Bitte /bearings lavish ausfuehren."; exit 1; }
+echo "$url  (${n:-0} offen, Stand ${t:-?})"
+( xdg-open "$url" >/dev/null 2>&1 & ) || true

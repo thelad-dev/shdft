@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Schreibt "URL|offene Karten|Stand" fuer die Statuszeile: das letzte offene bearings-Lavish-Board.
+# Quelle: Lavish-Sitzungen (offen) + Nutzlast im Board-HTML. Aufruf aus statusline.sh, nur lesend.
+home="${FM_HOME:-$HOME/sl-agent-workspace}"
+board="$home/.lavish/bearings-board.html"
+out="${XDG_CACHE_HOME:-$HOME/.cache}/claude-statusline/board.txt"
+[ -f "$board" ] || exit 0
+url=$(timeout 8 lavish-axi 2>/dev/null | grep -F "$board" | grep -F ',open,' | grep -o 'http[^"]*' | head -1)
+[ -n "$url" ] || { : > "$out"; exit 0; }
+n=$(python3 - "$board" <<'PY'
+import json,re,sys
+s=open(sys.argv[1],encoding='utf-8').read()
+dec=json.JSONDecoder()
+for m in re.finditer(r'\{"schema"',s):
+    try:
+        o,_=dec.raw_decode(s[m.start():]); print(len(o.get('captains_call',[]))); break
+    except Exception: pass
+else: print(0)
+PY
+)
+printf '%s|%s|%s\n' "$url" "${n:-0}" "$(date +%H:%M)" > "$out.tmp" && mv "$out.tmp" "$out"

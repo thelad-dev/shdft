@@ -49,5 +49,31 @@ if [ -n "$five" ]; then
 fi
 
 line=$(IFS='|'; printf '%s' "${parts[*]}" | sed 's/|/ | /g')
+
+# Sticky: das letzte offene bearings-Lavish-Board als URL im Klartext (Terminals machen sie anklickbar), ganz rechts.
+# Cache wird alle 30 s im Hintergrund erneuert (fm-board-link), die Statuszeile wartet nie darauf.
+board_cache="$cache_dir/board.txt"
+mkdir -p "$cache_dir"
+bage=999
+[ -f "$board_cache" ] && bage=$(( $(date +%s) - $(stat -c %Y "$board_cache") ))
+if [ "$bage" -ge 30 ] && mkdir "$cache_dir/board.lock" 2>/dev/null; then
+  ( fm-board-link; rmdir "$cache_dir/board.lock" ) >/dev/null 2>&1 &
+fi
+board_plain=""; board_show=""
+if [ -s "$board_cache" ]; then
+  IFS='|' read -r b_url b_n b_time < "$board_cache"
+  if [ -n "$b_url" ]; then
+    if [ "${b_n:-0}" -gt 0 ] 2>/dev/null; then label="Board: ${b_n} offen"; col='\033[1;33m'; else label="Board"; col='\033[0m'; fi
+    board_plain=" | ${label} ➜ ${b_url}"
+    board_show=$(printf ' | %b%s ➜ %s\033[0m' "$col" "$label" "${b_url}")
+  fi
+fi
+
+full_plain="${line}${board_plain}"
+full_show="${line}${board_show}"
 width=$(( ${COLUMNS:-0} - 4 ))
-if [ "$width" -gt "${#line}" ]; then printf '%*s' "$width" "$line"; else printf '%s' "$line"; fi
+if [ "$width" -gt "${#full_plain}" ]; then
+  printf '%*s%b' $(( width - ${#full_plain} )) '' "$full_show"
+else
+  printf '%b' "$full_show"
+fi
