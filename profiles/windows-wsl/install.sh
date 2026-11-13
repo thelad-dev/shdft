@@ -51,6 +51,7 @@ LINKS=(
     .claude/statusline.sh
     .claude/keybindings.json
     .claude/CLAUDE.md
+    .claude/skills/shdftupdate/SKILL.md
     .agents/AGENTS.md
     .pi/agent/models.json
     .local/bin/win-browser
