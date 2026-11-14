@@ -1,11 +1,26 @@
 #!/usr/bin/env bash
 # Schreibt "URL|offene Karten|Stand" fuer die Statuszeile: das letzte offene bearings-Lavish-Board.
-# Quelle: Lavish-Sitzungen (offen) + Nutzlast im Board-HTML. Aufruf aus statusline.sh, nur lesend.
-home="${FM_HOME:-$HOME/sl-agent-workspace}"
-board="$home/.lavish/bearings-board.html"
+# Quelle: Lavish-Sitzungen (offen) + Nutzlast im Board-HTML. Aufruf aus statusline.sh (Argument: Arbeitsverzeichnis), nur lesend.
 out="${XDG_CACHE_HOME:-$HOME/.cache}/claude-statusline/board.txt"
-[ -f "$board" ] || exit 0
-url=$(timeout 8 lavish-axi 2>/dev/null | grep -F "$board" | grep -F ',open,' | grep -o 'http[^"]*' | head -1)
+mkdir -p "$(dirname "$out")"
+sessions=$(timeout 8 lavish-axi 2>/dev/null)
+
+# Zuhause bestimmen, ohne rechnerspezifischen Standard: FM_HOME, sonst das erste Verzeichnis ab dem
+# Arbeitsverzeichnis der Sitzung (Argument 1) aufwaerts, das .lavish/bearings-board.html enthaelt,
+# sonst das Board einer offenen Lavish-Sitzung.
+board=""
+if [ -n "${FM_HOME:-}" ]; then
+  board="$FM_HOME/.lavish/bearings-board.html"
+else
+  d="${1:-}"
+  while [ -n "$d" ] && [ "$d" != "/" ]; do
+    [ -f "$d/.lavish/bearings-board.html" ] && { board="$d/.lavish/bearings-board.html"; break; }
+    d=$(dirname "$d")
+  done
+  [ -n "$board" ] || board=$(printf '%s\n' "$sessions" | grep -F ',open,' | grep -o '[^ ,"]*/\.lavish/bearings-board\.html' | head -1)
+fi
+[ -n "$board" ] && [ -f "$board" ] || { : > "$out"; exit 0; }
+url=$(printf '%s\n' "$sessions" | grep -F "$board" | grep -F ',open,' | grep -o 'http[^"]*' | head -1)
 [ -n "$url" ] || { : > "$out"; exit 0; }
 n=$(python3 - "$board" <<'PY'
 import json,re,sys

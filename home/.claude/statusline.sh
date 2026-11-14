@@ -53,11 +53,14 @@ line=$(IFS='|'; printf '%s' "${parts[*]}" | sed 's/|/ | /g')
 # Sticky: das letzte offene bearings-Lavish-Board als URL im Klartext (Terminals machen sie anklickbar), ganz rechts.
 # Cache wird alle 30 s im Hintergrund erneuert (fm-board-link), die Statuszeile wartet nie darauf.
 board_cache="$cache_dir/board.txt"
+session_dir=$(jq -r '.workspace.project_dir // .workspace.current_dir // .cwd // empty' <<<"$input" 2>/dev/null)
 mkdir -p "$cache_dir"
 bage=999
 [ -f "$board_cache" ] && bage=$(( $(date +%s) - $(stat -c %Y "$board_cache") ))
+# Eine Sperre, die aelter als eine Minute ist, ist verwaist und wird ersetzt; die Sperre faellt immer wieder weg.
+[ -n "$(find "$cache_dir/board.lock" -maxdepth 0 -mmin +1 2>/dev/null)" ] && rmdir "$cache_dir/board.lock" 2>/dev/null
 if [ "$bage" -ge 30 ] && mkdir "$cache_dir/board.lock" 2>/dev/null; then
-  ( fm-board-link; rmdir "$cache_dir/board.lock" ) >/dev/null 2>&1 &
+  ( trap 'rmdir "$cache_dir/board.lock" 2>/dev/null' EXIT; fm-board-link "$session_dir" ) >/dev/null 2>&1 &
 fi
 board_plain=""; board_show=""
 if [ -s "$board_cache" ]; then
