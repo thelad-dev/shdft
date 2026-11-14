@@ -47,8 +47,11 @@ LINKS=(
     .claude/statusline.sh
     .claude/keybindings.json
     .claude/CLAUDE.md
+    .claude/skills/shdftupdate/SKILL.md
     .agents/AGENTS.md
     .pi/agent/models.json
+    .local/bin/board
+    .local/bin/fm-board-link
 )
 MERGES=(
     .claude/settings.json

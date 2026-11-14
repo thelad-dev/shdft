@@ -21,6 +21,7 @@ Linux (nativ)                          Windows 11 + WSL
 - [Was sudo oder Administratorrechte braucht](#was-sudo-oder-administratorrechte-braucht)
 - [Tastenbelegung](#tastenbelegung)
 - [Ändern und aktualisieren](#ändern-und-aktualisieren)
+- [/shdftupdate](#shdftupdate)
 - [Rückbau](#rückbau)
 - [Was bewusst nicht drin ist](#was-bewusst-nicht-drin-ist)
 
@@ -34,6 +35,7 @@ Linux (nativ)                          Windows 11 + WSL
 | Claude/Pi Einstellungen (Whitelist) | `home/.claude/settings.json`, `home/.pi/agent/settings.json` | gleiche Pfade unter `$HOME` | Schlüssel hineinmischen |
 | WezTerm Linux | `profiles/linux/wezterm.lua` | `~/.config/wezterm/wezterm.lua` | Symlink |
 | Hack Nerd Font Linux | `profiles/linux/install-font.sh` | `~/.local/share/fonts` | Skript (`install.sh` ruft es auf) |
+| `/shdftupdate` (Skill und Skript) | `home/.claude/skills/shdftupdate/`, `profiles/shared/shdftupdate.sh` | `~/.claude/skills/shdftupdate/` | Symlink (Skill), Skript läuft aus dem Klon |
 | WezTerm + `.wslconfig` Windows | `profiles/windows-wsl/windows/` | `%USERPROFILE%\.config\wezterm\`, `%USERPROFILE%\.wslconfig` | Kopie (`install.ps1`) |
 | WSL Autostart / Font | `profiles/windows-wsl/install-admin.ps1`, `install-font.ps1` | Aufgabenplanung / Fonts | PowerShell |
 
@@ -209,6 +211,60 @@ Statuszeile: Modell, Kontext und Limits rechtsbündig (`quota-axi` optional).
 | Hack Nerd Font Linux | `profiles/linux/install-font.sh`, auch über `./install.sh` |
 | WezTerm / `.wslconfig` Windows | Datei unter `profiles/windows-wsl/windows/`, dann `install.ps1` |
 | Shell-Aliase | `shell/bashrc-shdft.sh` bzw. `setup-shell-defaults.sh`, dann Installer |
+| Änderungen aus dem Repo auf einem Rechner nachziehen | `/shdftupdate` (siehe unten), statt den Installer noch einmal zu starten |
+| Lokale Änderungen eines Rechners ins Repo bringen | `/shdftupdate` bereitet einen Zweig vor, Push und PR macht der Nutzer |
+
+## /shdftupdate
+
+Zieht die shdft-Einstellungen auf jedem Rechner nach, ohne je Lokales zu überschreiben, und bereitet für lokale Abweichungen einen PR vor.
+Der Installer bleibt der Weg für die Ersteinrichtung; `/shdftupdate` ist der Weg für alles danach.
+
+```bash
+profiles/shared/shdftupdate.sh [--dry-run] [--no-propose] [--local] [-v] [--repo PFAD]
+```
+
+In Claude Code genügt `/shdftupdate` (der Skill liegt über `install.sh` als Symlink in `~/.claude/skills/shdftupdate/`). Nachgezogene Skills und `CLAUDE.md` wirken erst in einer neuen Claude-Sitzung.
+
+Das Skript findet den Klon über `--repo`, `SHDFT_REPO`, den eigenen Ort, den Symlink `~/.claude/CLAUDE.md`, dann `~/shdft` und `~/workspaces/shdft`. Weitere Umgebung: `SHDFT_PROFILE` (`linux` oder `windows-wsl`, sonst WSL-Erkennung), `SHDFT_CONFIG_DIR` (Standard `~/.config/shdft`), `SHDFT_STATE_DIR` (Standard `~/.local/state/shdft`).
+Exit 0: aktuell oder sicher nachgezogen. Exit 1: etwas zu melden (Abweichung, Divergenz, offline, Rechner nicht erreichbar, Sicherheitsfund). Exit 2: Aufruf- oder Umgebungsfehler.
+
+**Ablauf**
+
+1. **Klon:** `git fetch`, dann Fast-Forward auf `origin/main`, nur auf `main` und nur, wenn `HEAD` ein Vorfahre ist. Voraus, divergiert, anderer Zweig, offline, umgeschriebenes `origin/main` und lokale Änderungen im Weg werden gemeldet, nichts wird erzwungen. Nie `stash`, `reset` oder `checkout --`. Dateien werden nur nachgezogen oder angelegt, wenn der Klon auf `main` steht und `HEAD` gleich `origin/main` ist (nach dem Fast-Forward oder schon aktuell) oder der Abruf offline scheiterte und der Klon auf `main` steht; sonst wird nur verglichen und gemeldet.
+2. **Dateien:** Jede verwaltete Datei (alles unter `home/`, die Profil-Dateien, die Shell-Blöcke, unter WSL die Browser-Vorlage) wird mit `HEAD` verglichen, und zwar mit dem Inhalt, den `$HOME` tatsächlich liefert (bei einem Symlink also der Arbeitsbaum des Klons).
+3. **Vorschlag:** Für lokal Abweichendes entsteht ein Zweig `shdftupdate/<Zeitstempel>` in einem eigenen Arbeitsbaum unter `$SHDFT_STATE_DIR/proposals/`. Der Inhalt ist ein Dreiwege-Merge aus der lokalen Fassung, dem früheren Repo-Stand mit dem kleinsten Diff zu ihr und dem heutigen `HEAD`: Der Vorschlag enthält die lokale Änderung und den aktuellen Repo-Stand, dreht also nie Änderungen aus dem Repo zurück. Bei einem Merge-Konflikt wird die Datei nicht vorgeschlagen und der Grund gemeldet. Ein gleicher, schon vorbereiteter Vorschlag wird wiederverwendet statt neu angelegt. Ausgegeben werden Zweig, Dateien und die Befehle `git push -u origin <zweig>` und `gh pr create ...` als Text. Das Skript pusht nie und öffnet nie einen PR.
+4. **Weitere Rechner:** siehe Hosts-Liste.
+
+**Zustände je Datei**
+
+| Zustand | Bedeutung | Aktion |
+|---|---|---|
+| gleich | Inhalt stimmt mit `HEAD` überein | keine |
+| Repo neuer | weicht ab, stimmt aber mit einem früheren Stand dieser Datei im Repo überein | nachziehen, vorher Sicherung nach `~/.shdft-backup/<Zeitstempel>/` |
+| lokal anders | stimmt mit keinem Repo-Stand überein | nie überschreiben; melden mit Diff-Zusammenfassung (`-v` zeigt den gekürzten Diff), Vorschlag |
+| fehlt | Ziel fehlt, ein kaputter Symlink zählt dazu | neu anlegen, aber nur, wenn überhaupt eine verwaltete Datei auf dem Rechner liegt; sonst der Hinweis, `profiles/<profil>/install.sh` auszuführen |
+
+Einstellungen (`settings.json` von Claude und Pi) werden schlüsselweise verglichen: Ein lokal anderer Wert macht die Datei "lokal anders" und wird nie überschrieben, Schlüssel nur auf dem Rechner (Hooks, Permissions, Plugins) sind nie eine Abweichung und kommen nie in einen Vorschlag. Ein Symlink, der auf einen anderen Klon zeigt, wird nur gemeldet, nie umgelegt. Durch einen Symlink wird nie geschrieben: Ein Link in den eigenen Klon liest dessen Arbeitsbaum, der gehört git. Weicht er von `HEAD` ab, auch weil jemand die Datei auf einen älteren Repo-Stand zurückgesetzt hat, ist das "lokal anders (Arbeitsbaum)" und wird nur gemeldet. Ist `~/.bashrc` oder `settings.json` ein Symlink, wird nichts hineingeschrieben, sondern ein Problem gemeldet. Schlägt die Sicherung nach `~/.shdft-backup/` fehl, wird die Datei nicht überschrieben.
+Es gibt keine Basis-Hashes vom letzten Ausrollen. Ob "Repo neuer" oder "lokal anders" gilt, entscheidet die Git-Historie der Datei.
+Kein Vorschlag entsteht, solange `HEAD` nicht gleich `origin/main` ist: Er wäre sonst auf einer anderen Basis gebaut, als die Abweichung gemessen wurde.
+
+**Hosts-Liste**
+
+`$SHDFT_CONFIG_DIR/hosts` (Standard `~/.config/shdft/hosts`) enthält je Zeile einen ssh-Alias, Leerzeilen und `#`-Kommentare sind erlaubt. Dann läuft derselbe Lauf per `ssh -o BatchMode=yes -o ConnectTimeout=10 <alias> 'bash -s -- --local ...' < shdftupdate.sh` auf den Gegenstellen, mit der Meldung je Rechner. Hat eine Gegenstelle den Klon nicht, steht dort "kein shdft-Repo auf diesem Rechner". Ist sie nicht erreichbar, zählt das als Meldung (Exit 1). Ohne Liste läuft nur der lokale Rechner; `--local` unterdrückt die Liste.
+
+**Sicherheitsprüfung (das Repo ist öffentlich)**
+
+Vor jedem Vorschlag werden nur die gegenüber `HEAD` neu hinzugekommenen Zeilen jeder Datei geprüft auf Tokens (GitHub, GitLab, npm, Hugging Face, Stripe, DigitalOcean, `sk-`, Slack, AWS, Google, JWT, `Authorization: Basic|Bearer`), private Schlüssel, Kennwörter (`password`, `pass`, `pwd`, `passphrase`, `secret`, `token`, `api_key`, `access_key` und Ähnliches, auch als Teil von Namen wie `DB_PASS`, mit Wert; auch `curl -u nutzer:kennwort`), private IP-Adressen (IPv4 und `fc00::/7`; `127.0.0.1` ist erlaubt), Mailadressen (außer `@users.noreply.github.com`, `noreply@` und der scp-Form `git@host:pfad`), feste Benutzerpfade (`/home/<name>`, `/Users/<name>`, `/mnt/<laufwerk>/Users/<name>`, `C:\Users\<name>`, UNC-Pfade) und Verbindungszeichenfolgen. Als Platzhalter für Kennwörter gelten nur `$NAME`, `${NAME}`, `<...>`, `@NAME@` und `strata-local`. Eine Datei mit Fund fällt allein aus dem Vorschlag; die Meldung nennt Datei, Zeile und Art mit einem maskierten Auszug (nie den Klartext, auch nicht mit `-v`; bei Mailadressen nur die Domain).
+Commits tragen nur eine Noreply-Identität (`@users.noreply.github.com`), nie die globale Git-Identität und nie einen Co-Autor. Reihenfolge: `git config --local user.name`/`user.email` des Klons, dann die Umgebungsvariable `SHDFT_AUTHOR` (`Name <adresse>`), dann der jüngste Commit auf `origin/main`, dessen Noreply-Adresse den Besitzer der `origin`-URL (`github.com/<besitzer>/...`) als Login trägt. Die beiden ersten zählen nur mit Noreply-Adresse; ein fremder Autor wird nie genommen. Ohne passende Identität bleibt es bei vorbereiteten Dateien und den Commit-Befehlen im Text.
+
+**Grenzen**
+
+- Die Windows-Seite (`profiles/windows-wsl/windows/`, `.wslconfig`, `install.ps1`) liegt auf Windows-Pfaden und wird nicht geprüft; die Ausgabe nennt das unter WSL.
+- Vorschläge für Einstellungen (`settings.json`) werden mit `jq` neu formatiert, der Diff im PR kann deshalb mehr Zeilen zeigen als geändert wurden.
+- Ohne `jq` bricht das Skript mit Exit 2 ab (installiert `install-sudo.sh`).
+- Der Trockenlauf (`--dry-run`) schreibt nichts, ruft aber `origin` ab und vergleicht die Dateien gegen den noch alten `HEAD`.
+- Für den Abruf setzt das Skript `GIT_SSH_COMMAND="ssh -o BatchMode=yes"` nur, wenn weder diese Umgebungsvariable noch `core.sshCommand` gesetzt ist.
+- Tests: `tests/run.sh` (reine bash-Tests mit temporären Repos, danach `shellcheck`, sofern installiert; `SHELLCHECK=<pfad>` nimmt eines abseits des `PATH`).
 
 ## Rückbau
 
