@@ -14,9 +14,9 @@ config.use_fancy_tab_bar = false
 -- Smithay's client-side fallback frame (min/max/close button strip).
 -- NONE matches that borderless look; KWin still moves/resizes the window.
 if os.getenv("WAYLAND_DISPLAY") then
-	config.window_decorations = "NONE"
+    config.window_decorations = "NONE"
 else
-	config.window_decorations = "RESIZE"
+    config.window_decorations = "RESIZE"
 end
 
 -- Report modified keys (Shift+Enter, Ctrl+Enter) distinctly to herdr and Claude Code.
@@ -31,8 +31,8 @@ config.keys = {
 
 -- Konsole habits: middle click pastes, also inside herdr (which captures the mouse).
 config.mouse_bindings = {
-	{ event = { Down = { streak = 1, button = "Middle" } }, mods = "NONE", action = wezterm.action.PasteFrom("Clipboard"), mouse_reporting = false },
-	{ event = { Down = { streak = 1, button = "Middle" } }, mods = "NONE", action = wezterm.action.PasteFrom("Clipboard"), mouse_reporting = true },
+    { event = { Down = { streak = 1, button = "Middle" } }, mods = "NONE", action = wezterm.action.PasteFrom("Clipboard"), mouse_reporting = false },
+    { event = { Down = { streak = 1, button = "Middle" } }, mods = "NONE", action = wezterm.action.PasteFrom("Clipboard"), mouse_reporting = true },
 }
 
 -- Dim unfocused windows so the focused one is obvious at a glance.
@@ -42,31 +42,31 @@ local UNFOCUSED_WINDOW_BACKGROUND_OPACITY = 0.82
 -- get_config_overrides() hands back a copy, so the current value is never the
 -- same table we last stored; compare the fields instead of the identity.
 local function same_text_hsb(actual, expected)
-	if actual == nil or expected == nil then
-		return actual == expected
-	end
-	return actual.hue == expected.hue
-		and actual.saturation == expected.saturation
-		and actual.brightness == expected.brightness
+    if actual == nil or expected == nil then
+        return actual == expected
+    end
+    return actual.hue == expected.hue
+        and actual.saturation == expected.saturation
+        and actual.brightness == expected.brightness
 end
 
 wezterm.on("window-focus-changed", function(window)
-	local overrides = window:get_config_overrides() or {}
-	local text_hsb, opacity
-	if not window:is_focused() then
-		text_hsb = UNFOCUSED_FOREGROUND_TEXT_HSB
-		opacity = UNFOCUSED_WINDOW_BACKGROUND_OPACITY
-	end
+    local overrides = window:get_config_overrides() or {}
+    local text_hsb, opacity
+    if not window:is_focused() then
+        text_hsb = UNFOCUSED_FOREGROUND_TEXT_HSB
+        opacity = UNFOCUSED_WINDOW_BACKGROUND_OPACITY
+    end
 
-	-- Only write when one of the two values we own actually changes; a redundant
-	-- set_config_overrides() call would trigger another config reload.
-	if same_text_hsb(overrides.foreground_text_hsb, text_hsb) and overrides.window_background_opacity == opacity then
-		return
-	end
+    -- Only write when one of the two values we own actually changes; a redundant
+    -- set_config_overrides() call would trigger another config reload.
+    if same_text_hsb(overrides.foreground_text_hsb, text_hsb) and overrides.window_background_opacity == opacity then
+        return
+    end
 
-	overrides.foreground_text_hsb = text_hsb
-	overrides.window_background_opacity = opacity
-	window:set_config_overrides(overrides)
+    overrides.foreground_text_hsb = text_hsb
+    overrides.window_background_opacity = opacity
+    window:set_config_overrides(overrides)
 end)
 
 return config
