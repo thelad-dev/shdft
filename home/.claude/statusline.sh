@@ -50,7 +50,7 @@ fi
 
 line=$(IFS='|'; printf '%s' "${parts[*]}" | sed 's/|/ | /g')
 
-# Sticky: das letzte offene bearings-Lavish-Board als URL im Klartext (Terminals machen sie anklickbar), ganz rechts.
+# Sticky: das aelteste noch offene Lavish-Board als URL im Klartext (Terminals machen sie anklickbar), ganz rechts.
 # Cache wird alle 30 s im Hintergrund erneuert (fm-board-link), die Statuszeile wartet nie darauf.
 board_cache="$cache_dir/board.txt"
 session_dir=$(jq -r '.workspace.project_dir // .workspace.current_dir // .cwd // empty' <<<"$input" 2>/dev/null)

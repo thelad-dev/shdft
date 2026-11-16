@@ -77,6 +77,9 @@ Dasselbe gilt für jeden Bericht, den ich lesen soll: er kommt als Lavish-Board,
 Lavish-Boards werden mir über die LAN-Adresse des Rechners verlinkt, auf dem sie laufen, nicht über eine Tailscale-Adresse und nicht über localhost.
 Sage ich "alles auf ein Board", entsteht genau ein Lavish, auf dem ich alles abarbeite - keine Unterboards, keine Verweise auf weitere Boards mit offenen Fragen.
 Lavish-Boards werden immer im lad-CI gebaut (`/lad-ci`).
+Offene Fragen an mich kommen auf ein bearings-Lavish; neue Einträge werden dort dynamisch ergänzt, solange ich das Board noch nicht beantwortet habe. Geht das nicht, entstehen weitere Boards, die ich abarbeite.
+Vor jedem neuen Eintrag und jedem neuen Board wird geprüft, ob ein älteres Board ihn schon offen führt; habe ich es noch nicht geöffnet, wird es im Zweifel aktualisiert, statt ein neues anzulegen.
+Die Statuszeile zeigt immer das älteste noch offene Board (Sitzung nicht beendet, älteste nach Anlage).
 Jeder fertige Bericht wird im Berichtsdashboard angezeigt und von dort aus verlinkt; ein Dateipfad allein ist keine Ablieferung.
 Aufträge an Worker geben meine Worte wieder und erfinden keine Rahmung dazu (kein Zielunternehmen, kein Empfänger, kein Umsetzungsziel, das ich nicht genannt habe).
 
