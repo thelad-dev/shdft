@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Tests für home/.local/bin/fm-board-link und die Sperre in home/.claude/statusline.sh:
+# Tests für home/.local/bin/fm-board-link (ältestes offenes Board) und die Sperre in home/.claude/statusline.sh:
 # temporäres HOME, ein Lavish-Ersatz im PATH, ohne Netzwerk.
 # shellcheck disable=SC2016  # Shell-Variablen stehen im Ersatzskript absichtlich als Text
 set -uo pipefail
@@ -25,35 +25,43 @@ assert_eq() {
 export HOME="$BASE/home"
 mkdir -p "$HOME" "$BASE/bin"
 CACHE="$HOME/.cache/claude-statusline"
-URL="http://127.0.0.1:4387/session/abc"
 
-# Ersatz für lavish-axi: listet nur das Board unter $BASE/zuhause als offene Sitzung.
+# Ersatz für lavish-axi: listet die Zeilen aus $BASE/sessions.txt (Format der echten Liste).
 cat >"$BASE/bin/lavish-axi" <<SH
 #!/usr/bin/env bash
-printf 'sessions[1]{file,status,url}:\n  %s,open,"%s",0,none\n' "$BASE/zuhause/.lavish/bearings-board.html" "$URL"
+printf 'sessions[2]{file,status,url,pending_prompts,listener}:\n'
+cat "$BASE/sessions.txt"
 SH
 chmod +x "$BASE/bin/lavish-axi"
 export PATH="$BASE/bin:$PATH"
 
-mkdir -p "$BASE/zuhause/.lavish" "$BASE/zuhause/projekt/unter"
-printf '<html>{"schema":1,"captains_call":[1,2]}</html>' >"$BASE/zuhause/.lavish/bearings-board.html"
+mkdir -p "$BASE/b"
+payload='<html>{"schema":1,"captains_call":[1,2]}</html>'
+# Anlage-Reihenfolge alt, bericht, neu (Geburtszeit hat Sekundenauflösung; spätere Änderung zählt nicht)
+printf '%s' "$payload" >"$BASE/b/alt.html"; sleep 1.1
+printf '<html>Bericht</html>' >"$BASE/b/bericht.html"; sleep 1.1
+printf '%s' "$payload" >"$BASE/b/neu.html"
+touch -d '1 day ago' "$BASE/b/neu.html"
+touch "$BASE/b/alt.html"
+row() { printf '  %s,%s,"http://127.0.0.1:4387/session/%s",0,none\n' "$1" "$2" "$3"; }
 
-run_link() { rm -rf "$CACHE"; bash "$LINK" "$@"; cat "$CACHE/board.txt" 2>/dev/null | sed 's/|[0-9:]*$//'; }
+run_link() { rm -rf "$CACHE"; bash "$LINK" "$@"; sed 's/|[0-9:]*$//' "$CACHE/board.txt" 2>/dev/null; }
 
-# 1. Zuhause ohne FM_HOME aus dem Arbeitsverzeichnis der Sitzung (aufwärts gesucht)
-assert_eq "Zuhause aus Arbeitsverzeichnis" "$URL|2" "$(run_link "$BASE/zuhause/projekt/unter")"
+# 1. Das älteste offene Board nach Anlage gewinnt, unabhängig von der Listenreihenfolge
+{ row "$BASE/b/neu.html" open neu; row "$BASE/b/alt.html" open alt; row "$BASE/b/bericht.html" open bericht; } >"$BASE/sessions.txt"
+assert_eq "ältestes offenes Board" "http://127.0.0.1:4387/session/alt|2" "$(run_link)"
+assert_eq "Argument wird nicht gebraucht" "http://127.0.0.1:4387/session/alt|2" "$(run_link /irgendwo)"
 
-# 2. Arbeitsverzeichnis außerhalb: das Board einer offenen Lavish-Sitzung
-assert_eq "Zuhause aus Lavish-Sitzung" "$URL|2" "$(run_link "$BASE")"
-assert_eq "Zuhause ohne Argument" "$URL|2" "$(run_link)"
+# 2. Ein beendetes Board zählt nicht, das nächstältere offene wird gezeigt (Bericht ohne Karten: 0)
+{ row "$BASE/b/neu.html" open neu; row "$BASE/b/alt.html" ended alt; row "$BASE/b/bericht.html" open bericht; } >"$BASE/sessions.txt"
+assert_eq "beendetes Board übersprungen" "http://127.0.0.1:4387/session/bericht|0" "$(run_link)"
 
-# 3. FM_HOME hat Vorrang
-assert_eq "FM_HOME vorrangig" "" "$(FM_HOME="$BASE/leer" run_link "$BASE/zuhause")"
+# 3. Eine Sitzung ohne Datei zählt nicht
+{ row "$BASE/b/fehlt.html" open fehlt; row "$BASE/b/neu.html" open neu; } >"$BASE/sessions.txt"
+assert_eq "Sitzung ohne Datei übersprungen" "http://127.0.0.1:4387/session/neu|2" "$(run_link)"
 
-# 4. Kein Board: leere Anzeige, kein Fehler, alte Anzeige wird geleert
-mv "$BASE/zuhause/.lavish/bearings-board.html" "$BASE/board.html"
-rm -f "$BASE/bin/lavish-axi"
-printf '#!/usr/bin/env bash\nexit 0\n' >"$BASE/bin/lavish-axi"
+# 4. Kein offenes Board: leere Anzeige, kein Fehler, alte Anzeige wird geleert
+row "$BASE/b/alt.html" ended alt >"$BASE/sessions.txt"
 mkdir -p "$CACHE"
 printf 'http://alt|1|00:00\n' >"$CACHE/board.txt"
 bash "$LINK" "$BASE"

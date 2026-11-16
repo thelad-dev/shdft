@@ -1,27 +1,23 @@
 #!/usr/bin/env bash
-# Schreibt "URL|offene Karten|Stand" fuer die Statuszeile: das letzte offene bearings-Lavish-Board.
-# Quelle: Lavish-Sitzungen (offen) + Nutzlast im Board-HTML. Aufruf aus statusline.sh (Argument: Arbeitsverzeichnis), nur lesend.
+# Schreibt "URL|offene Karten|Stand" fuer die Statuszeile: das aelteste noch offene Lavish-Board.
+# "Offen" heisst: die Lavish-Sitzung ist nicht beendet (Status open in der Sitzungsliste) und die Datei existiert.
+# "Aelteste" zaehlt nach Anlage der Datei (Geburtszeit, sonst Aenderungszeit). Nur lesend; das Argument
+# (Arbeitsverzeichnis der Sitzung) wird nicht mehr gebraucht und bleibt nur aus Kompatibilitaet erlaubt.
 out="${XDG_CACHE_HOME:-$HOME/.cache}/claude-statusline/board.txt"
 mkdir -p "$(dirname "$out")"
 sessions=$(timeout 8 lavish-axi 2>/dev/null)
 
-# Zuhause bestimmen, ohne rechnerspezifischen Standard: FM_HOME, sonst das erste Verzeichnis ab dem
-# Arbeitsverzeichnis der Sitzung (Argument 1) aufwaerts, das .lavish/bearings-board.html enthaelt,
-# sonst das Board einer offenen Lavish-Sitzung.
-board=""
-if [ -n "${FM_HOME:-}" ]; then
-  board="$FM_HOME/.lavish/bearings-board.html"
-else
-  d="${1:-}"
-  while [ -n "$d" ] && [ "$d" != "/" ]; do
-    [ -f "$d/.lavish/bearings-board.html" ] && { board="$d/.lavish/bearings-board.html"; break; }
-    d=$(dirname "$d")
-  done
-  [ -n "$board" ] || board=$(printf '%s\n' "$sessions" | grep -F ',open,' | grep -o '[^ ,"]*/\.lavish/bearings-board\.html' | head -1)
-fi
-[ -n "$board" ] && [ -f "$board" ] || { : > "$out"; exit 0; }
-url=$(printf '%s\n' "$sessions" | grep -F "$board" | grep -F ',open,' | grep -o 'http[^"]*' | head -1)
-[ -n "$url" ] || { : > "$out"; exit 0; }
+board=""; url=""; oldest=""
+while IFS= read -r row; do
+  file=${row%%,open,*}; file=${file#"${file%%[![:space:]]*}"}
+  link=$(printf '%s' "$row" | grep -o 'http[^"]*' | head -1)
+  [ -f "$file" ] && [ -n "$link" ] || continue
+  t=$(stat -c %W "$file" 2>/dev/null); { [ -n "$t" ] && [ "$t" -gt 0 ] 2>/dev/null; } || t=$(stat -c %Y "$file")
+  if [ -z "$oldest" ] || [ "$t" -lt "$oldest" ]; then oldest=$t; board=$file; url=$link; fi
+done < <(printf '%s\n' "$sessions" | grep -F ',open,')
+[ -n "$board" ] || { : > "$out"; exit 0; }
+
+# Offene Karten nur fuer bearings-Boards (Nutzlast mit captains_call); sonst 0.
 n=$(python3 - "$board" <<'PY'
 import json,re,sys
 s=open(sys.argv[1],encoding='utf-8').read()
