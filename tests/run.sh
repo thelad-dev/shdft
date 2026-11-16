@@ -15,7 +15,7 @@ done
 SC=${SHELLCHECK:-shellcheck}
 if command -v "$SC" >/dev/null 2>&1; then
     echo "== shellcheck"
-    "$SC" "$ROOT/profiles/shared/shdftupdate.sh" "$HERE"/*.sh && echo "shellcheck: ohne Meldung" || status=1
+    "$SC" "$ROOT/profiles/shared/shdftupdate.sh" "$ROOT/home/.local/bin/fm-board-link" "$HERE"/*.sh && echo "shellcheck: ohne Meldung" || status=1
 else
     echo "== shellcheck nicht gefunden, übersprungen"
 fi
