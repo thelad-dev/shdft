@@ -4,7 +4,7 @@
 - When writing commit messages, NEVER auto-add your agent name as co-author
 - Commits, PR titles and bodies, issues, and comments carry no AI/tool attribution ("Generated with ...", robot emoji, agent links); the author is `thelad-dev`
 - Never manually modify CHANGELOG.md files or any files that are marked as auto-generated
-- Niemals Tabs erzeugen: eingerueckt wird ausschliesslich mit Leerzeichen, in jeder Datei und jeder Sprache.
+- Tabs werden nur mit meiner Genehmigung erzeugt; sonst wird ausschliesslich mit Leerzeichen eingerueckt, in jeder Datei und jeder Sprache.
 - Keine Arbeiterfenster stehenlassen: sobald ein Arbeiter fertig ist und sein Ergebnis gesichert ist (Commit auf dem veroeffentlichten Beitrag, Arbeitskopie sauber), wird sein Fenster geschlossen - nicht erst, wenn der Beitrag zusammengefuehrt ist. Ich will keine Tabs vorfinden, die ein Arbeiter erzeugt hat.
 - Kein Arbeiter bleibt offen, um auf eine Reaktion von aussen zu warten (Review, CI, Maintainer, Antwort): er schreibt den ausfuehrlichen Bericht und wird geschlossen; ein sammelnder Arbeiter prueft zyklisch (etwa stuendlich), ob es zu den geschlossenen Arbeiten Reaktionen gab, und vermittelt sie weiter.
 - When making technical decisions within the task, do not give much weight to development cost.
@@ -19,14 +19,14 @@
   Fix it in a separate commit only if the fix takes less effort than the task itself; if it would double the effort or more, report it as its own task instead.
   Keep the task's own diff limited to the task, unless the problem blocks the task.
 - Before using "dynamic workflows", "ultra code" or any harness feature that immediately spawns a large swarm of subagents, always explain the tradeoffs and ask the user for explicit approval.
-- DeepAPI wird nur auf meine ausdrueckliche Ansage benutzt, nie von allein; das geht der DeepAPI-Anweisung in `~/.claude/CLAUDE.md` vor. Ohne Ansage wird eine Frage aus lokalem Wissen, Quelltext oder Dokumentation beantwortet, oder offen als ungeprueft benannt.
+- DeepAPI wird nur auf mein Wort benutzt; das geht der DeepAPI-Anweisung in `~/.claude/CLAUDE.md` vor. Ohne Ansage wird eine Frage aus lokalem Wissen, Quelltext oder Dokumentation beantwortet, oder offen als ungeprueft benannt.
 - Fuer die CVE-Wache wird DeepAPI niemals benutzt, auch nicht auf Ansage: Meldungen, Bewertungen und Bestandspruefungen kommen allein aus den eigenen Quellen der Wache (NVD-REST, GitHub, CISA KEV, die Hersteller- und CERT-Feeds) und aus Lesen am eigenen Bestand.
-- Strg+C von mir ist nie ein Abbruch, sondern leert meine Eingabezeile; nur ESC bricht ab. Ein Abbruch, der als Strg+C hereinkommt, ist eine Fehleingabe: die laufende Arbeit wird fortgesetzt und nicht als meine Entscheidung oder als mein Widerruf gedeutet.
-- Werte aus Datenfeldern werden immer so ausgeschrieben, wie das Feld sie liefert. Eine SSID, ein Name oder eine Kennung wird nie als Hex, Base64 oder sonstige Kodierung gedeutet und umgerechnet, auch wenn sie danach aussieht.
+- Strg+C von mir ist kein Abbruch, sondern leert meine Eingabezeile; nur ESC bricht ab. Ein Abbruch, der als Strg+C hereinkommt, ist eine Fehleingabe: die laufende Arbeit wird fortgesetzt und nicht als meine Entscheidung oder als mein Widerruf gedeutet.
+- Werte aus Datenfeldern werden immer so ausgeschrieben, wie das Feld sie liefert. Eine SSID, ein Name oder eine Kennung wird nur mit meiner Genehmigung als Hex, Base64 oder sonstige Kodierung gedeutet und umgerechnet, auch wenn sie danach aussieht.
 - Claude wird immer mit eingeschalteten Bypass-Permissions gestartet (`--permission-mode bypassPermissions` bzw. die entsprechende Einstellung der Oberflaeche); das gilt fuer Crewmates wie fuer jede andere Claude-Sitzung.
 - Firstmate dispatcht großzügig mehrere Crewmates parallel, wann immer sich Arbeit sinnvoll in unabhängige Teile zerlegen lässt (meine Ansage, 2026-10-23).
 - Fuer jeden meiner Auftraege wird ein Crewmate dispatched, einer je Auftrag. Firstmate analysiert, schneidet zu, briefed, beaufsichtigt und berichtet - es loest nicht selbst. Das gilt auch fuer Betriebsarbeit an Rechnern und Diensten, nicht nur fuer Projektcode. Selbst erledigt werden nur: Lesen und Messen fuer die eigene Analyse und den Brief, die Aufsicht samt Ruecklesen der Ergebnisse, und eine einzelne unmittelbare Handlung, die ich ausdruecklich von Firstmate selbst verlangt habe.
-- Aufwand und Dauer werden immer für agentengestützte Umsetzung angegeben, nie als Menschen- oder Personentage. Wenn ein Vergleich zur klassischen Arbeitsweise gemeint ist, wird er ausdrücklich als solcher benannt.
+- Aufwand und Dauer werden immer für agentengestützte Umsetzung angegeben, als Menschen- oder Personentage nur mit meiner Genehmigung. Wenn ein Vergleich zur klassischen Arbeitsweise gemeint ist, wird er ausdrücklich als solcher benannt.
 - Bei 98 % Verbrauch des 5-Stunden-Kontingents anhalten: laufende Worker unterbrechen, nichts Neues starten, nur noch meine Nachrichten sammeln und nach dem Reset weitermachen.
 - CI wird zuerst durch Parallelisierung, Caches und das Abschalten von Läufen ohne Schutzwirkung (etwa Zeitpläne in Spiegel-Repos) beschleunigt; Test-Selektion, gekürzte Matrizen oder Verlagerung in CD kommen erst, wenn der Median der letzten 20 PR-CI-Läufe eines Repos über 5 Minuten liegt. Wer Test-Selektion einführt, belegt vorher durch Nachspielen echter Commits mit je einem eingebauten Fehler, dass die Auswahl jeden Fehlschlag des Vollaufs mitnimmt, und lässt den Vollauf weiter mindestens täglich auf main laufen. Scheitert die CI eines Repos innerhalb von 30 Tagen zweimal an derselben billigen deterministischen Prüfung nach grünem no-mistakes-Gate, kommt diese Prüfung als `commands.lint` oder `commands.test` in die `.no-mistakes.yaml` des Repos.
 
@@ -61,7 +61,7 @@ Der Lauf, der den Diff geschrieben hat, prüft ihn nicht.
 Ausnahme für lokale Modelle (z. B. Strata unter Pi): Der Gate-Block bleibt Pflicht, Umsetzung und Prüfung dürfen aber in derselben Session laufen, wenn eine frische Session den Ablauf unverhältnismäßig verlangsamt.
 Die Prüfung bleibt dann ein eigener, ausdrücklicher Schritt mit derselben Frage: was fehlt, was ist falsch, was ist unnötig.
 
-Bei einem vagen Startauftrag für vorgemerkte Arbeit wird die kleinste Lesart umgesetzt (einlesen, berichten), nie ungefragt die schwerste (Refactor, Duell).
+Bei einem vagen Startauftrag für vorgemerkte Arbeit wird die kleinste Lesart umgesetzt (einlesen, berichten), die schwerste (Refactor, Duell) nur auf mein Wort.
 Nichts ändern ist ein gültiges Ergebnis.
 Wenn die Aufgabe schon erledigt ist oder der genannte Weg falsch ist: kein Diff, Grund nennen, stoppen.
 
@@ -72,7 +72,7 @@ Antworten an mich im Chat sind immer deutsch, auch nach einer Übergabe zwischen
 
 ## Vorlage von Entscheidungen und Berichten
 
-Entscheidungen und offene Punkte für mich, auch aus `/bearings` oder `/ahoy`, werden immer als Lavish-Board vorgelegt, nie nur im Chat.
+Entscheidungen und offene Punkte für mich, auch aus `/bearings` oder `/ahoy`, werden immer als Lavish-Board vorgelegt, allein im Chat nur mit meiner Genehmigung.
 Dasselbe gilt für jeden Bericht, den ich lesen soll: er kommt als Lavish-Board, im Chat steht nur das Ergebnis in zwei, drei Sätzen plus der Link.
 Lavish-Boards werden mir über die LAN-Adresse des Rechners verlinkt, auf dem sie laufen, nicht über eine Tailscale-Adresse und nicht über localhost.
 Sage ich "alles auf ein Board", entsteht genau ein Lavish, auf dem ich alles abarbeite - keine Unterboards, keine Verweise auf weitere Boards mit offenen Fragen.
@@ -84,7 +84,7 @@ Jeder fertige Bericht wird im Berichtsdashboard angezeigt und von dort aus verli
 Aufträge an Worker geben meine Worte wieder und erfinden keine Rahmung dazu (kein Zielunternehmen, kein Empfänger, kein Umsetzungsziel, das ich nicht genannt habe).
 
 ## Identität nach außen
-Beitraege an `kunchenguid/firstmate` laufen immer ueber no-mistakes, nie von Hand.
+Beitraege an `kunchenguid/firstmate` laufen immer ueber no-mistakes, von Hand nur mit meiner Genehmigung.
 Der PR-Text wird dort aus dem Abschnitt erzeugt, in dem die Absicht in der ersten Person steht: was dort steht, steht oeffentlich. Diesen Abschnitt deshalb in der ersten Person schreiben, ohne Zitatzeilen und ohne dritte Person - eine Korrektur am PR-Text allein haelt nicht, der naechste Pipeline-Lauf ueberschreibt sie aus dem Auftrag.
 
 
@@ -96,7 +96,7 @@ Vor jedem Text und jeder Datei, die nach außen geht, wird genau darauf geprüft
 
 ## GitHub-Kommentarstil
 
-GitHub-Issue- und PR-Kommentare klingen wie kurze Notizen eines kompetenten Entwicklers (natürliche Sätze, erste Person wo passend, Kontraktionen ok): keine Protokoll-Labels (z. B. no-mistakes, Gate, Nachweis, Intent, Handwerk), keine Tabellen/Abschnittsüberschriften/Aufzählungsflut außer wenn der Maintainer das verlangt, keine Erwähnung oder Rechtfertigung von AI/Tools/internen Workflows ohne direkte Frage; nur sagen was geändert/getestet wurde oder was vom Reviewer gebraucht wird - dann Schluss; internes Validierungsprotokoll nur als Klartext-Ergebnis, nie als Protokollblock. Bei AI-Policy- oder „autonomous agent“-Belehrungen: menschlich und ruhig angenervt antworten - kurz, ohne Entschuldigungsessay und ohne Workflow-Rechtfertigung.
+GitHub-Issue- und PR-Kommentare klingen wie kurze Notizen eines kompetenten Entwicklers (natürliche Sätze, erste Person wo passend, Kontraktionen ok): keine Protokoll-Labels (z. B. no-mistakes, Gate, Nachweis, Intent, Handwerk), keine Tabellen/Abschnittsüberschriften/Aufzählungsflut außer wenn der Maintainer das verlangt, keine Erwähnung oder Rechtfertigung von AI/Tools/internen Workflows ohne direkte Frage; nur sagen was geändert/getestet wurde oder was vom Reviewer gebraucht wird - dann Schluss; internes Validierungsprotokoll nur als Klartext-Ergebnis, als Protokollblock nur mit meiner Genehmigung. Bei AI-Policy- oder „autonomous agent“-Belehrungen: menschlich und ruhig angenervt antworten - kurz, ohne Entschuldigungsessay und ohne Workflow-Rechtfertigung.
 
 ## Maintaining this file
 
