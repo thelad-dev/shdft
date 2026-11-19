@@ -1,0 +1,9 @@
+# Plan: nie / niemals in den geteilten Regeln ersetzen
+
+Ziel: In `home/.agents/AGENTS.md` die Wörter "nie" und "niemals" durch Formulierungen mit "nur mit meiner Genehmigung" bzw. "nur auf mein Wort" ersetzen, soweit der Sinn erhalten bleibt. Grundlage ist die Inventur (Tabelle A/B/C).
+
+- Annahme: Nur deutsche Regelsätze zählen; englisches "never" und "NEVER" bleibt. Sicherheits-, Datenschutz- und Anonymitätsgrenzen (Zeilen 23, 91, 93, 94 und die Skript-Garantien in `home/.claude/skills/shdftupdate/SKILL.md`) behalten die strenge Fassung, weil ein Genehmigungsvorbehalt sie abschwächen oder sinnlos machen würde. Die Datei bleibt bei ihrer ASCII-Schreibweise der Umlaute dort, wo die Nachbarzeilen so schreiben.
+- Zwei Wege: (1) wörtlich "nur mit meiner Genehmigung" überall einsetzen, wie es die Inventur für A vorsieht; (2) bei B-Zeilen den Satz so umbauen, dass die Aussage erhalten bleibt (Vorschläge der Inventur) und bei Grenzen mit Schutzwirkung nichts ändern. Ich nehme (1) für A und (2) für B; die rein wörtliche Ersetzung für B lasse ich, weil sie den Sinn kippt (Zeile 22, 24, 64, 75).
+- Ablehnung: Ein erfahrener Kollege würde ablehnen, wenn Anonymität, Secrets oder Skript-Garantien durch einen Genehmigungsvorbehalt aufgeweicht werden, oder wenn ein Satz nach der Ersetzung doppelt gemoppelt ist ("nur auf Ansage ... nur mit Genehmigung").
+- Nachweis: `grep -n -i -E '\b(nie|niemals)\b' home/.agents/AGENTS.md` zeigt nur noch die bewusst belassenen Zeilen; `grep -nP '\t'` auf die geänderte Datei bleibt leer; im Diff kommt kein neuer Gedankenstrich vor (die vorhandenen stehen nur im englischen Satz Zeile 3).
+- Grenze: Nur `home/.agents/AGENTS.md` ändert sich. Andere Dateien (Skills anderer Projekte, Cursor-Regeln einzelner Repos, Firstmate) und der shdftupdate-Skill bleiben unberührt; Englisch bleibt unberührt.
